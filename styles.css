@@ -1,0 +1,17 @@
+
+.half-screen {
+    height: 50%;
+    /* La mitad de la altura de la pantalla */
+    width: 100%;
+    /* La mitad del ancho de la pantalla */
+}
+
+.footer {
+    bottom: 0;
+    width: 100%;
+  }
+
+  .card-product-grid .img-wrap {
+    border-radius: 0.2rem 0.2rem 0 0;
+    height: 220px
+}
