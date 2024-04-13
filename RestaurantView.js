@@ -83,7 +83,7 @@ class RestaurantView {
                 const { allergen } = event.currentTarget.dataset;
                 handler(allergen);
             });
-        });        
+        });
     }
 
     bindMenusList(handler) {
@@ -123,8 +123,8 @@ class RestaurantView {
         }
     }
 
-    bindDishDetail(handler) {      
-        document.getElementById('principal').addEventListener('click', (event) => {            
+    bindDishDetail(handler) {
+        document.getElementById('principal').addEventListener('click', (event) => {
             const dishElement = event.target.closest('[data-dish]');
             if (dishElement) {
                 const dish = dishElement.getAttribute('data-dish');
@@ -133,7 +133,7 @@ class RestaurantView {
                 event.preventDefault();
             }
         });
-        document.getElementById('platos_aleatorios').addEventListener('click', (event) => {            
+        document.getElementById('platos_aleatorios').addEventListener('click', (event) => {
             const dishElement = event.target.closest('[data-dish]');
             if (dishElement) {
                 const dish = dishElement.getAttribute('data-dish');
@@ -228,7 +228,7 @@ class RestaurantView {
             <li class="breadcrumb-item"><a data-allergens="allergens" class="listAllergens" href="#">Allergens</a></li>
             <li class="breadcrumb-item active" aria-current="page"> ${data.allergen.name}</li>`);
 
-            const dishesListHtml = data.dishes.map(dish => `<li><a class="text-decoration-none" href="#" data-dish="${dish.name}">${dish.name}</a></li>`).join('');
+        const dishesListHtml = data.dishes.map(dish => `<li><a class="text-decoration-none" href="#" data-dish="${dish.name}">${dish.name}</a></li>`).join('');
 
         principal.insertAdjacentHTML('beforeend', `
                 <div class="col-md-12 mt-3">
@@ -449,6 +449,243 @@ class RestaurantView {
             </div>`);
         });
     }
+    //!PRUEBA NO CORREGIDO
+
+    // Método para mostrar el formulario de creación de platos
+    displayCreateDishForm(categories, allergens, handler) {
+        const formHtml = `
+        <div id="createDishForm" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create new dish</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="newDishForm">
+                            <div class="mb-3">
+                                <label for="dishName" class="form-label">Dish Name</label>
+                                <input type="text" class="form-control" id="dishName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="dishDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="dishDescription" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                            <label for="ingredients" class="form-label">Ingredients</label>
+                            <textarea class="form-control" id="ingredients" rows="2" required></textarea>
+                        </div>
+                            <div class="mb-3">
+                                <label for="categorySelect" class="form-label">Category</label>
+                                <select class="form-select" id="categorySelect" multiple required>
+                                    ${categories.map(category => `<option value="${category.category.name}">${category.category.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="allergenSelect" class="form-label">Allergens</label>
+                                <select class="form-select" id="allergenSelect" multiple required>
+                                    ${allergens.map(allergen => `<option value="${allergen.allergen.name}">${allergen.allergen.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create dish</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        // Agregar el formulario al cuerpo del documento
+        document.body.insertAdjacentHTML('beforeend', formHtml);
+
+        // Mostrar el modal
+        const createDishModal = new bootstrap.Modal(document.getElementById('createDishForm'));
+        createDishModal.show();
+
+        // Manejar el envío del formulario
+        document.getElementById('newDishForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const dishName = document.getElementById('dishName').value;
+            const dishDescription = document.getElementById('dishDescription').value;
+            const ingredients = document.getElementById('ingredients').value;
+            const selectedCategories = Array.from(document.getElementById('categorySelect').selectedOptions).map(option => option.value);
+            const selectedAllergens = Array.from(document.getElementById('allergenSelect').selectedOptions).map(option => option.value);
+            // Llamar a un manejador externo para enviar los datos del nuevo plato al controlador
+            handler(dishName, dishDescription, ingredients, selectedCategories, selectedAllergens);
+            createDishModal.hide();
+        });
+    }
+
+    // Método para vincular el evento de mostrar el formulario de creación de platos a un botón
+    bindCreateDishForm(handler) {
+        const createDishButton = document.getElementById('createDishButton');
+        createDishButton.addEventListener('click', () => {
+            // Llamar al método para mostrar el formulario de creación de platos
+            handler();
+        });
+    }
+
+    displayDeleteDishForm(dishes, handler) {
+        const existingForm = document.getElementById('dDishForm');
+        if (existingForm) {
+            existingForm.remove();
+        }
+        const formHtml = `
+        <div id="dDishForm" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete dish</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="dDishForm">
+                            
+                            <div class="mb-3">
+                                <label for="dishName" class="form-label">Dish</label>
+                                <select class="form-select" id="dishName"  required>
+                                    ${dishes.map(d => `<option value="${d.dish.name}">${d.dish.name}</option>`).join('')}
+                                </select>
+                            </div>
+                           
+                            <button type="submit" class="btn btn-primary">Delete dish</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        // Agregar el formulario al cuerpo del documento
+        document.body.insertAdjacentHTML('beforeend', formHtml);
+
+        // Mostrar el modal
+        const deleteDishModal = new bootstrap.Modal(document.getElementById('dDishForm'));
+        deleteDishModal.show();
+
+        // Manejar el envío del formulario
+        document.getElementById('dDishForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const dishName = document.getElementById('dishName').value;
+            console.log(dishName);
+            if (dishName !== '') {
+                handler(dishName);
+            }
+
+            deleteDishModal.hide();
+        });
+    }
+
+    bindDeleteDishForm(handler) {
+        const deleteDishButton = document.getElementById('deleteDishButton');
+        deleteDishButton.addEventListener('click', () => {
+            // Llamar al método para mostrar el formulario de creación de platos
+            handler();
+        });
+    }
+
+    bindControlDishMenuForm(handler) {
+        const controlDishMenuButtom = document.getElementById('controlDishMenuButtom');
+        controlDishMenuButtom.addEventListener('click', () => {
+            // Llamar al método para mostrar el formulario de creación de platos
+            handler();
+        });
+    }
+    displayControlDishMenuForm(dishes, menus, handlerAssign, handlerDeasign) {
+        const existingForm = document.getElementById('dDishForm');
+        if (existingForm) {
+            existingForm.remove();
+        }
+        const formHtml = `
+<div id="dDishForm" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage dish in menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignDishForm">
+                    <div class="mb-3">
+                        <label for="assignDishName" class="form-label">Dish</label>
+                        <select class="form-select" id="assignDishName" required>
+                            ${dishes.map(d => `<option value="${d.dish.name}">${d.dish.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignMenuName" class="form-label">Menu</label>
+                        <select class="form-select" id="assignMenuName" required>
+                            ${menus.map(m => `<option value="${m.menu.name}">${m.menu.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Assign to menu</button>
+                </form>
+
+                <form id="unassignDishForm" class="mt-5">
+                    <div class="mb-3">
+                        <label for="unassignMenuName" class="form-label">Menu</label>
+                        <select class="form-select" id="unassignMenuName" required>
+                            ${menus.map(m => `<option value="${m.menu.name}">${m.menu.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="unassignDishName" class="form-label">Dish</label>
+                        <select class="form-select" id="unassignDishName" required>
+                        
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-danger">Unassign from menu</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+
+        // Agregar el formulario al cuerpo del documento
+        document.body.insertAdjacentHTML('beforeend', formHtml);
+
+        // Mostrar el modal
+        const deleteDishModal = new bootstrap.Modal(document.getElementById('dDishForm'));
+        deleteDishModal.show();
+
+        // Manejar el envío del formulario
+        document.getElementById('dDishForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const dishName = document.getElementById('dishName').value;
+            console.log(dishName);
+            // if (dishName !== '') {
+            //     handler(dishName);
+            // }
+
+            deleteDishModal.hide();
+        })
+        this.updateDishesSelect(menus, "Italian especialities");
+        document.getElementById('unassignMenuName').addEventListener('change', (event) => {
+            const menuName = event.target.value;
+            this.updateDishesSelect(menus, menuName);
+        });
+        
+    }
+
+
+    updateDishesSelect(menus, menuName) {
+        const selectedMenu = menus.find((m) => m.menu.name == menuName);
+        const dishesSelect = document.getElementById('unassignDishName');
+
+        // Limpiar el select de platos
+        dishesSelect.innerHTML = '';
+
+        // Crear las opciones del select de platos basadas en el menú seleccionado
+        selectedMenu.dishes.forEach((dish) => {
+            const option = document.createElement('option');
+            option.value = dish.name;
+            option.textContent = dish.name;
+            dishesSelect.appendChild(option);
+        });
+    }
+
+
+
 
 }
 export default RestaurantView;
