@@ -69,7 +69,7 @@ class RestaurantController {
         this[VIEW].onLoad(categories, dishes, allergens, menus, restaurants);
 
         this[VIEW].bindDishesCategoryList((category) => this.handleDishesCategoryList(category));
-
+        
         this[VIEW].bindDishDetail((dish) => this.handleDishDetail(dish));
         this[VIEW].bindAllergenDetail((allergen) => this.handleAllergenDetail(allergen));
         this[VIEW].bindMenuDetail((menu) => this.handleMenuDetail(menu));
@@ -81,6 +81,7 @@ class RestaurantController {
         this[VIEW].bindCreateDishForm(() => this.handleShowCreateDish());
         this[VIEW].bindDeleteDishForm(() => this.handleShowDeleteDish());
         this[VIEW].bindControlDishMenuForm(() => this.handleShowControlDishMenu());
+        this[VIEW].bindCreateCategoryForm(() => this.handleShowCreateCategory());
     }
 
     handleShowCreateDish = () => {
@@ -90,21 +91,23 @@ class RestaurantController {
     }
 
     handleCreateDish = (dishName, description, ingredients, categories, allergens) => {
-            let arrIngredients = ingredients.split(",");
-            let createdDish = this[MODEL].createDish(dishName, description, arrIngredients);
-            this[MODEL].addDish(createdDish);
-            let categoriesStored = [...this[MODEL].getCategories()];
-            console.log(categoriesStored);
-            categories.forEach(category => {
-                let categoryToAdd = categoriesStored.find(c => c.category.name === category).category;
-                this[MODEL].assignCategoryToDish(categoryToAdd, createdDish);
-            });
-            let allergensStored = [...this[MODEL].getAllergens()];
-            allergens.forEach(allergen => {
-                let allergenToAdd = allergensStored.find(a => a.allergen.name === allergen).allergen;
-                this[MODEL].assignAllergenToDish(allergenToAdd, createdDish);
-            });
-            
+
+
+        let arrIngredients = ingredients.split(",");
+        let createdDish = this[MODEL].createDish(dishName, description, arrIngredients);
+        this[MODEL].addDish(createdDish);
+        let categoriesStored = [...this[MODEL].getCategories()];
+
+        categories.forEach(category => {
+            let categoryToAdd = categoriesStored.find(c => c.category.name === category).category;
+            this[MODEL].assignCategoryToDish(categoryToAdd, createdDish);
+        });
+        let allergensStored = [...this[MODEL].getAllergens()];
+        allergens.forEach(allergen => {
+            let allergenToAdd = allergensStored.find(a => a.allergen.name === allergen).allergen;
+            this[MODEL].assignAllergenToDish(allergenToAdd, createdDish);
+        });
+
     }
 
     handleShowDeleteDish = () => {
@@ -115,7 +118,6 @@ class RestaurantController {
     handleDeleteDish = (dishName) => {
         const dishes = [...this[MODEL].getDishes()];
         const dish = dishes.find(d => d.dish.name === dishName);
-        console.log(dish);
         this[MODEL].removeDish(dish.dish);
     }
 
@@ -126,17 +128,39 @@ class RestaurantController {
     }
 
     handleAssignDishMenu = (dishName, menuName) => {
-        // const dishes = [...this[MODEL].getDishes()];
-        // const dish = dishes.find(d => d.dish.name === dishName);
-        // console.log(dish);
-        // this[MODEL].removeDish(dish.dish);
+        const dishes = [...this[MODEL].getDishes()];
+        const menus = [...this[MODEL].getMenus()];
+
+        const dish = dishes.find(d => d.dish.name === dishName);
+        const menu = menus.find(m => m.menu.name === menuName);
+
+        this[MODEL].assignDishToMenu(dish.dish, menu.menu);
     }
     handleDeassignDishMenu = (dishName, menuName) => {
-        // const dishes = [...this[MODEL].getDishes()];
-        // const dish = dishes.find(d => d.dish.name === dishName);
-        // console.log(dish);
-        // this[MODEL].removeDish(dish.dish);
+        const dishes = [...this[MODEL].getDishes()];
+        const menus = [...this[MODEL].getMenus()];
+
+        const dish = dishes.find(d => d.dish.name === dishName);
+        const menu = menus.find(m => m.menu.name === menuName);
+
+        this[MODEL].deassignDishToMenu(dish.dish, menu.menu);
     }
+
+    handleShowCreateCategory = () => {
+        console.log("Showing create category form...");
+        this[VIEW].displayCreateCategoryForm(this.handleCreateCategory);
+        
+
+    }
+
+    handleCreateCategory = (categoryName, description) => {
+        const category = this[MODEL].createCategory(categoryName, description);
+        this[MODEL].addCategory(category);
+        
+        
+    }
+
+
 
     handleInit = () => {
         this.onInit();
@@ -190,7 +214,6 @@ class RestaurantController {
 
         if (dishData) {
             this[VIEW].displayDishDetail(dishData.dish);
-            console.log(dishData.dish)
         } else {
             console.log(`No se encontró la categoría '${dishName}'`);
         }

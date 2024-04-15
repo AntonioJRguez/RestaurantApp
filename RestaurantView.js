@@ -9,42 +9,11 @@ class RestaurantView {
 
     onLoad(categories, dishes, allergens, menus, restaurants) {
         // llama al controlador con el método getCategories y lo almacena en una variable
-        let categorias = categories;
+        // let categorias = categories;
 
-        categorias.forEach(element => {
-            document.getElementById('principal').insertAdjacentHTML('beforeend', `<div class="col-md-4">
-            <div class="card card-product-grid">
-                <a data-category="${element.category.name}" href="#" class="img-wrap"> <!-- Asegúrate de que esto es correcto -->
-                    <img class="img-fluid w-100" src="https://via.placeholder.com/258x172.jpg?text=${element.category.name}">
-                </a>
-                <div id="menuCategorias" class="card-body">
-                    <h4 class="card-title mt-5">${element.category.name}</h4>
-                    <p class="card-text">${element.category.description}</p>
-                    <a data-category="${element.category.name}" href="#" class="btn btn-primary"><i class="fa fa-eye"></i> Show Category</a>
-                </div>
-            </div>`);
-
-            document.getElementById('menu_categorias').insertAdjacentHTML('beforeend', '<li><a data-category=' + element.category.name + ' class="dropdown-item" href="#">' + element.category.name + '</a></li>');
-
-        });
-
-        /*
-        allergens.forEach(element => {
-
-            document.getElementById('menu_allergens').insertAdjacentHTML('beforeend', '<li><a data-category='+element.allergen.name+' class="dropdown-item" href="#">' + element.allergen.name + '</a></li>');
-
-        });
-        menus.forEach(element => {
-
-            document.getElementById('menu_menus').insertAdjacentHTML('beforeend', '<li><a data-category='+element.menu.name+' class="dropdown-item" href="#">' + element.menu.name + '</a></li>');
-
-        });
-        restaurants.forEach(element => {
-
-            document.getElementById('menu_restaurants').insertAdjacentHTML('beforeend', '<li><a data-category='+element.restaurant.name+' class="dropdown-item" href="#">' + element.restaurant.name + '</a></li>');
-
-        });*/
-
+        this.showCategories(categories);
+        
+        
         let platos = dishes.sort(() => 0.5 - Math.random()).slice(0, 3);
 
         platos.forEach(element => {
@@ -74,6 +43,29 @@ class RestaurantView {
             <li class="breadcrumb-item"><a href="index.html">Home</a></li>`);
 
         this.init();
+    }
+
+    showCategories(categories){
+        principal.replaceChildren("");
+        categories.forEach(element => {
+            let principal = document.getElementById('principal');
+            
+            principal.insertAdjacentHTML('beforeend', `<div class="col-md-4">
+            <div class="card card-product-grid">
+                <a data-category="${element.category.name}" href="#" class="img-wrap">
+                    <img class="img-fluid w-100" src="https://via.placeholder.com/258x172.jpg?text=${element.category.name}">
+                </a>
+                <div id="menuCategorias" class="card-body">
+                    <h4 class="card-title mt-5">${element.category.name}</h4>
+                    <p class="card-text">${element.category.description}</p>
+                    <a data-category="${element.category.name}" href="#" class="btn btn-primary"><i class="fa fa-eye"></i> Show Category</a>
+                </div>
+            </div>`);
+
+            document.getElementById('menu_categorias').insertAdjacentHTML('beforeend', '<li><a data-category=' + element.category.name + ' class="dropdown-item" href="#">' + element.category.name + '</a></li>');
+
+        });
+
     }
 
     bindAllergsList(handler) {
@@ -107,10 +99,6 @@ class RestaurantView {
     }
 
     bindDishesCategoryList(handler) {
-        //!Original
-        // let categoryList = document.getElementById('principal');
-        // let links = categoryList.querySelectorAll('a[data-category]');
-        //?LLamando a todos los a[data-category]
 
         let links = document.querySelectorAll('a[data-category]');
 
@@ -453,6 +441,7 @@ class RestaurantView {
 
     // Método para mostrar el formulario de creación de platos
     displayCreateDishForm(categories, allergens, handler) {
+       
         const formHtml = `
         <div id="createDishForm" class="modal fade" tabindex="-1">
             <div class="modal-dialog">
@@ -565,7 +554,7 @@ class RestaurantView {
         document.getElementById('dDishForm').addEventListener('submit', event => {
             event.preventDefault();
             const dishName = document.getElementById('dishName').value;
-            console.log(dishName);
+
             if (dishName !== '') {
                 handler(dishName);
             }
@@ -589,7 +578,7 @@ class RestaurantView {
             handler();
         });
     }
-    displayControlDishMenuForm(dishes, menus, handlerAssign, handlerDeasign) {
+    displayControlDishMenuForm(dishes, menus, handlerAssign, handlerDeassign) {
         const existingForm = document.getElementById('dDishForm');
         if (existingForm) {
             existingForm.remove();
@@ -619,16 +608,16 @@ class RestaurantView {
                     <button type="submit" class="btn btn-primary">Assign to menu</button>
                 </form>
 
-                <form id="unassignDishForm" class="mt-5">
+                <form id="deassignDishForm" class="mt-5">
                     <div class="mb-3">
-                        <label for="unassignMenuName" class="form-label">Menu</label>
-                        <select class="form-select" id="unassignMenuName" required>
+                        <label for="deassignMenuName" class="form-label">Menu</label>
+                        <select class="form-select" id="deassignMenuName" required>
                             ${menus.map(m => `<option value="${m.menu.name}">${m.menu.name}</option>`).join('')}
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="unassignDishName" class="form-label">Dish</label>
-                        <select class="form-select" id="unassignDishName" required>
+                        <label for="deassignDishName" class="form-label">Dish</label>
+                        <select class="form-select" id="deassignDishName" required>
                         
                         </select>
                     </div>
@@ -649,28 +638,38 @@ class RestaurantView {
         deleteDishModal.show();
 
         // Manejar el envío del formulario
-        document.getElementById('dDishForm').addEventListener('submit', event => {
+        document.getElementById('assignDishForm').addEventListener('submit', event => {
             event.preventDefault();
-            const dishName = document.getElementById('dishName').value;
-            console.log(dishName);
-            // if (dishName !== '') {
-            //     handler(dishName);
-            // }
+            const dishName = document.getElementById('assignDishName').value;
+            const menuName = document.getElementById('assignMenuName').value;
+
+
+            handlerAssign(dishName, menuName);
+
+            deleteDishModal.hide();
+        })
+        document.getElementById('deassignDishForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const dishName = document.getElementById('deassignDishName').value;
+            const menuName = document.getElementById('deassignMenuName').value;
+
+
+            handlerDeassign(dishName, menuName);
 
             deleteDishModal.hide();
         })
         this.updateDishesSelect(menus, "Italian especialities");
-        document.getElementById('unassignMenuName').addEventListener('change', (event) => {
+        document.getElementById('deassignMenuName').addEventListener('change', (event) => {
             const menuName = event.target.value;
             this.updateDishesSelect(menus, menuName);
         });
-        
+
     }
 
 
     updateDishesSelect(menus, menuName) {
         const selectedMenu = menus.find((m) => m.menu.name == menuName);
-        const dishesSelect = document.getElementById('unassignDishName');
+        const dishesSelect = document.getElementById('deassignDishName');
 
         // Limpiar el select de platos
         dishesSelect.innerHTML = '';
@@ -683,6 +682,77 @@ class RestaurantView {
             dishesSelect.appendChild(option);
         });
     }
+
+    // Método para vincular el evento de mostrar el formulario de creación de platos a un botón
+    bindCreateCategoryForm(handler) {
+        const createDishButton = document.getElementById('createCategoryButtom');
+        createDishButton.addEventListener('click', () => {
+            // Llamar al método para mostrar el formulario de creación de platos
+            handler();
+        });
+    }
+    displayCreateCategoryForm(handler) {
+        const formHtml = `
+        <div id="createCategoryForm" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create new category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="newCategoryForm">
+                            <div class="mb-3">
+                                <label for="categoryName" class="form-label">Category Name</label>
+                                <input type="text" class="form-control" id="categoryName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="categoryDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="categoryDescription" rows="3" required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Create Category</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        // Agregar el formulario al cuerpo del documento
+        document.body.insertAdjacentHTML('beforeend', formHtml);
+
+        // Mostrar el modal
+        const createCategoryModal = new bootstrap.Modal(document.getElementById('createCategoryForm'));
+        createCategoryModal.show();
+
+        // Manejar el envío del formulario
+        document.getElementById('newCategoryForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const categoryName = document.getElementById('categoryName').value;
+            const categoryDescription = document.getElementById('categoryDescription').value;
+
+            // Llamar a un manejador externo para enviar los datos del nuevo plato al controlador
+            handler(categoryName, categoryDescription);
+
+            // document.getElementById('principal').insertAdjacentHTML('beforeend', `<div class="col-md-4">
+            // <div class="card card-product-grid mt-5">
+            //     <a data-category="${categoryName}" href="#" class="img-wrap"> <!-- Asegúrate de que esto es correcto -->
+            //         <img class="img-fluid w-100" src="https://via.placeholder.com/258x172.jpg?text=${categoryName}">
+            //     </a>
+            //     <div id="menuCategorias" class="card-body">
+            //         <h4 class="card-title mt-5">${categoryName}</h4>
+            //         <p class="card-text">${categoryDescription}</p>
+            //         <a data-category="${categoryName}" href="#" class="btn btn-primary"><i class="fa fa-eye"></i> Show Category</a>
+            //     </div>
+            // </div>`);
+
+            document.getElementById('menu_categorias').insertAdjacentHTML('beforeend', '<li><a data-category=' + categoryName + ' class="dropdown-item" href="#">' + categoryName + '</a></li>');
+            createCategoryModal.hide();
+
+        });
+    }
+
+    
 
 
 
