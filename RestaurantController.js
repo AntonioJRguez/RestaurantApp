@@ -7,9 +7,6 @@ class RestaurantController {
         this[VIEW] = viewRestaurant;
     }
 
-    onInit() {
-        this[VIEW].init();
-    }
 
     onLoad(dishes, allergens, menus, restaurants, categories) {
         for (const dish of dishes) {
@@ -82,6 +79,12 @@ class RestaurantController {
         this[VIEW].bindDeleteDishForm(() => this.handleShowDeleteDish());
         this[VIEW].bindControlDishMenuForm(() => this.handleShowControlDishMenu());
         this[VIEW].bindCreateCategoryForm(() => this.handleShowCreateCategory());
+        this[VIEW].bindDeleteCategoryForm(() => this.handleShowDeleteCategory());
+        this[VIEW].bindControlDishCategoryForm(() => this.handleShowControlDishCategory());
+
+
+        this[VIEW].bindCreateRestaurantForm(() => this.handleShowCreateRestaurant());
+
     }
 
     handleShowCreateDish = () => {
@@ -148,16 +151,63 @@ class RestaurantController {
 
     handleShowCreateCategory = () => {
         console.log("Showing create category form...");
-        this[VIEW].displayCreateCategoryForm(this.handleCreateCategory);
+        this[VIEW].displayCreateCategoryForm(this.handleCreateCategory, this.handleDishesCategoryList);
         
-
+       
     }
 
     handleCreateCategory = (categoryName, description) => {
         const category = this[MODEL].createCategory(categoryName, description);
         this[MODEL].addCategory(category);
+
+    }
+
+    handleShowDeleteCategory = () => {
+        const categories = [...this[MODEL].getCategories()];
+        this[VIEW].displayDeleteCategoryForm(categories, this.handleDeleteCategory);
+    }
+
+    handleDeleteCategory = (categoryName) => {
+        const categories = [...this[MODEL].getCategories()];
+        const category = categories.find(c => c.category.name === categoryName);
+        this[MODEL].removeCategory(category.category);
+    }
+
+    handleShowControlDishCategory = () => {
+        const dishes = [...this[MODEL].getDishes()];
+        const categories = [...this[MODEL].getCategories()];
+        this[VIEW].displayControlDishCategoryForm(dishes, categories, this.handleAssignDishCategory, this.handleDeassignDishCategory);
+    }
+    handleAssignDishCategory = (dishName, categoryName) => {
+        const dishes = [...this[MODEL].getDishes()];
+        const categories = [...this[MODEL].getCategories()];
+
+        const dish = dishes.find(d => d.dish.name === dishName);
+        const category = categories.find(c => c.category.name === categoryName);
+
+        this[MODEL].assignCategoryToDish(category.category,dish.dish);
+    }
+    handleDeassignDishCategory = (dishName, menuName) => {
+        const dishes = [...this[MODEL].getDishes()];
+        const categories = [...this[MODEL].getCategories()];
+
+        const dish = dishes.find(d => d.dish.name === dishName);
+        const category = categories.find(c => c.category.name === menuName);
+
+        this[MODEL].deassignCategoryToDish(category.category,dish.dish);
+    }
+
+    handleShowCreateRestaurant = () => {
+        console.log("Showing create restaurant form...");
+        this[VIEW].displayCreateRestaurantForm(this.handleCreateRestaurant);
         
-        
+       
+    }
+
+    handleCreateRestaurant = (restaurantName, description, restaurantLocation) => {
+        const restaurant = this[MODEL].createRestaurant(restaurantName, description, restaurantLocation);
+        this[MODEL].addRestaurant(restaurant);
+
     }
 
 
@@ -180,7 +230,6 @@ class RestaurantController {
         const allergsList = [...this[MODEL].getAllergens()];
 
         if (allergsList.length > 0) {
-            console.log(allergsList);
             this[VIEW].displayAllergens(allergsList);
         } else {
             console.log(`No se encontraro Alérgenos`);
@@ -251,6 +300,7 @@ class RestaurantController {
             console.log(`No se encontró el restaurant '${restaurantName}'`);
         }
     }
+
 
 
 }
