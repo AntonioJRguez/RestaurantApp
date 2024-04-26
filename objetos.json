@@ -1,0 +1,199 @@
+{
+    "menus": [
+        {
+            "name": "Italian especialities",
+            "description": "Authentic Italian dishes"
+        },
+        {
+            "name": "Today's menu",
+            "description": "Real time menu"
+        },
+        {
+            "name": "Around the world",
+            "description": "A menu from many places of the world"
+        }
+    ],
+    "dishes": [
+        {
+            "name": "Pasta Bolonesa",
+            "description": "Delicious pasta with tomatoe",
+            "ingredients": [
+                "Pasta",
+                "tomatoe"
+            ],
+            "image": "bolonesa.jpg"
+        },
+        {
+            "name": "Pasta Carbonara",
+            "description": "Delicious pasta carbonara",
+            "ingredients": [
+                "Pasta",
+                "bacon"
+            ],
+            "image": "carbonara.jpg"
+        },
+        {
+            "name": "Pasta al pesto",
+            "description": "Delicious pasta al pesto",
+            "ingredients": [
+                "Pasta",
+                "pesto"
+            ],
+            "image": "pesto.jpg"
+        },
+        {
+            "name": "Pasta alfredo",
+            "description": "Delicious pasta alfredo",
+            "ingredients": [
+                "Pasta",
+                "salsa alfredo"
+            ],
+            "image": "alfredo.jpg"
+        },
+        {
+            "name": "Chicken with potatoes",
+            "description": "Great chicken tasting plate",
+            "ingredients": [
+                "Chicken",
+                "Pepper",
+                "Potatoes"
+            ],
+            "image": "chicken.jpg"
+        },
+        {
+            "name": "Tomato-Butter Roast Chicken",
+            "description": "Great chicken baked plate",
+            "ingredients": [
+                "Chicken",
+                "Mustard",
+                "Comin"
+            ],
+            "image": "chicken.jpg"
+        },
+        {
+            "name": "Cajun-Stuffed Chicken",
+            "description": "A different chicken good dish",
+            "ingredients": [
+                "Chicken",
+                "Onion",
+                "Cheddar"
+            ],
+            "image": "chicken.jpg"
+        },
+        {
+            "name": "Garlicky Greek Chicken",
+            "description": "Simple chicken dish",
+            "ingredients": [
+                "Chicken",
+                "Garlic",
+                "Oregano"
+            ],
+            "image": "chicken.jpg"
+        },
+        {
+            "name": "Mushroom soup",
+            "description": "A soup made of mushroom",
+            "ingredients": [
+                "Mushrooms",
+                "Onion",
+                "Garlic"
+            ],
+            "image": "soup.jpg"
+        },
+        {
+            "name": "Vegetable soup",
+            "description": "Variety vegetable soup",
+            "ingredients": [
+                "Asparagus",
+                "Turnip",
+                "Celery"
+            ],
+            "image": "soup.jpg"
+        },
+        {
+            "name": "Thai curry noodle soup",
+            "description": "Tipical asian soup",
+            "ingredients": [
+                "Curry",
+                "Noodles",
+                "Prawns"
+            ],
+            "image": "soup.jpg"
+        },
+        {
+            "name": "Miso & butternut soup",
+            "description": "Great tasting soup",
+            "ingredients": [
+                "Miso",
+                "Butternut",
+                "Garlic"
+            ],
+            "image": "soup.jpg"
+        }
+    ],
+    "categories":[
+        {
+            "name": "Pasta",
+            "description": "Pasta dishes"
+        },
+        {
+            "name": "Chicken",
+            "description": "Chicken-based dishes"
+        },
+        {
+            "name": "Soups",
+            "description": "Soup dishes"
+        }
+    ],
+    "allergens":[
+        {
+            "name": "Gluten",
+            "description": "Contains gluten"
+        },
+        {
+            "name": "Dairy",
+            "description": "Contains dairy"
+        },
+        {
+            "name": "Seafood",
+            "description": "Contains seafood"
+        },
+        {
+            "name": "Peanut",
+            "description": "Contains peanuts"
+        }
+    ],
+    "coordinates":[
+        {
+            "latitude": 40.7128,
+            "longitude": -74.006
+        },
+        {
+            "latitude": 34.0522,
+            "longitude": -118.2437
+        },
+        {
+            "latitude": 30.0162,
+            "longitude": -29.2737
+        }
+    ],
+    "restaurants":[
+        {
+            "name": "La Mafia",
+            "description": "Italian restaurant",
+            "location": null
+        },
+        {
+            "name": "Meson Manolo",
+            "description": "Best spanish restaurant",
+            "location": null
+        },
+        {
+            "name": "Sakura",
+            "description": "Asian restaurant",
+            "location": null
+        }
+    ]
+        
+    
+}
