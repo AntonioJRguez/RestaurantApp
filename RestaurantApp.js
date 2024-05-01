@@ -3,10 +3,11 @@ import RestaurantManagerSingleton, {
 } from './RestaurantModel.js';
 import RestaurantController from './RestaurantController.js';
 import RestaurantView from './RestaurantView.js';
+import AuthenticationService from './authentication.js';
 
 const RestaurantApp = new
     RestaurantController(RestaurantManagerSingleton.getInstance(), new
-        RestaurantView());
+        RestaurantView(), AuthenticationService.getInstance());
 
 
 

@@ -1,6 +1,9 @@
+import { setCookie } from './util.js';
+
 class RestaurantView {
     constructor() {
         this.principal = document.getElementById('principal');
+        this.menu = document.getElementById('menuContainer');
     }
 
 
@@ -432,7 +435,6 @@ class RestaurantView {
             </div>`);
         });
     }
-    //!PRUEBA NO CORREGIDO
 
     // Método para mostrar el formulario de creación de platos
     displayCreateDishForm(categories, allergens, handler) {
@@ -1205,7 +1207,321 @@ class RestaurantView {
         });
     }
 
+    showCookiesMessage() {
+        const toast = `<div class="fixed-top p-5 mt-5">
+          <div class="toast fade show w-100 mw-100" role="alert" id="cookies-message" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              
+              <strong class="me-auto">Accept cookies</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" id="btnDismissCookie" aria-label="Close"></button>
+            </div>
+            <div class="toast-body p-2">
+            Accept cookies to continue on this website
+            </div>
+            <div class="p-3">
+            <button type="button" class="btn btn-primary" id="btnAcceptCookie">Accept</button>
+            <button type="button" class="btn btn-danger" id="btnDenyCookie">Deny</button>
+            </div>
+          </div>
+          </div>`;
+        document.body.insertAdjacentHTML('afterbegin', toast);
+
+        const cookiesMessage = document.getElementById('cookies-message');
+        cookiesMessage.addEventListener('hidden.bs.toast', (event) => {
+            event.currentTarget.parentElement.remove();
+        });
+
+        const btnAcceptCookie = document.getElementById('btnAcceptCookie');
+        btnAcceptCookie.addEventListener('click', (event) => {
+            setCookie('accetedCookieMessage', 'true', 1);
+            event.currentTarget.parentElement.parentElement.parentElement.remove();
+        });
+
+        const denyCookieFunction = (event) => {
+            document.getElementsByTagName("body")[0].replaceChildren();
+            document.getElementsByTagName("body")[0].insertAdjacentHTML('afterbegin', `<div class="container my-3"><div class="alert alert-danger" role="alert">
+                        <strong>To use this website you must accept the use of cookies. You must reload the page and accept the conditions to continue browsing. </strong>
+                    </div></div>`);
+
+        };
+        const btnDenyCookie = document.getElementById('btnDenyCookie');
+        btnDenyCookie.addEventListener('click', denyCookieFunction);
+        const btnDismissCookie = document.getElementById('btnDismissCookie');
+        btnDismissCookie.addEventListener('click', denyCookieFunction);
+    }
+
+    showAuthUserProfile(user) {
+        const userArea = document.getElementById('userArea');
+        userArea.replaceChildren();
+        userArea.insertAdjacentHTML('afterbegin', `<div class="account d-flex mx-2 flex-column" style="text-align: right">
+                    ${user.username} <a id="aCloseSession" href="#">Cerrar sesión</a>
+                </div>
+                <div class="image">
+                    <img alt="${user.username}" src="img/user.jpg" />
+                </div>`);
+    }
+
+    setUserCookie(user) {
+        setCookie('activeUser', user.username, 1);
+    }
+
+    deleteUserCookie() {
+        setCookie('activeUser', '', 0);
+    }
+
+    showIdentificationLink() {
+        const userArea = document.getElementById('userArea');
+        userArea.replaceChildren();
+        userArea.insertAdjacentHTML('afterbegin', `<div class="account d-flex mx-2 flex-column" style="text-align: right; height: 40px">
+                <a id="login" href="#"><i class="bi bi-person-circle" aria-hidden="true"></i> Identificate</a>
+            </div>`);
+    }
+
+    bindIdentificationLink(handler) {
+        const login = document.getElementById('login');
+        login.addEventListener('click', (event) => {
+            handler();
+        });
+    }
+
+    bindLogin(handler) {
+        const form = document.forms.fLogin;
+        form.addEventListener('submit', (event) => {
+            handler(form.username.value, form.password.value);
+            event.preventDefault();
+        });
+    }
+
+    showLogin() {
+        const login = `<div class="container h-100" id="loginForm">
+        <div class="d-flex justify-content-center h-100">
+            <div class="user_card">
+                <div class="d-flex justify-content-center form_container">
+                    <form name="fLogin" role="form" novalidate>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
+                                <input type="text" name="username" class="form-control" value="" placeholder="Usuario">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                                <input type="password" name="password" class="form-control" value="" placeholder="Contraseña">
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="submit">Acceder</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>`
+            ;
+        document.getElementsByTagName("header")[0].insertAdjacentHTML('afterend', login);
+    }
+    hideLoginForm() {
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.remove();
+        }
+
+        const invalidUserName = document.getElementById('invalidUserName');
+        if (invalidUserName) {
+            invalidUserName.remove();
+        }
+    }
+
+    showInvalidUserMessage() {
+        const invalidUserName = document.getElementById('invalidUserName');
+        if (!invalidUserName) {
+            document.getElementById("loginForm").insertAdjacentHTML('afterend', `<div class="container my-3" id="invalidUserName"><div class="alert alert-warning" role="alert">
+		<strong>El usuario y la contraseña no son válidos. Inténtelo nuevamente.</strong>
+	</div></div>`);
+        }
+        document.forms.fLogin.reset();
+        document.forms.fLogin.username.focus();
+    }
+
+    showAuthUserProfile(user) {
+        const userArea = document.getElementById('userArea');
+        userArea.replaceChildren();
+        userArea.insertAdjacentHTML('afterbegin', `<div class="account d-flex mx-2 flex-column" style="text-align: right">
+				Hola ${user.username} <a id="aCloseSession" href="#">Desconectar</a>
+			</div>`);
+    }
+
+    removeAdminMenu() {
+        const adminMenu = document.getElementById('menu_administration');
+        if (adminMenu) adminMenu.parentElement.remove();
+    }
+
+    bindCloseSession(handler) {
+        document.getElementById('aCloseSession').addEventListener('click', (event) => {
+            handler();
+            event.preventDefault();
+        });
+    }
+    showAdminMenu() {
+        const adminMenu = document.getElementById('administration');
+        adminMenu.replaceChildren();
+        const menuAdmin = ` <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        Administration
+    </a>
+    <ul id="menu_administration" class="dropdown-menu">
+        <li class="nav-item"><a id="createDishButton"  href="#" class="nav-link" aria-current="page">Create Dish</a></li>
+        <li class="nav-item"><a id="deleteDishButton"  href="#" class="nav-link" aria-current="page">Delete Dish</a></li>
+        <li class="nav-item"><a id="controlDishMenuButtom"  href="#" class="nav-link" aria-current="page">Menus-Dishes</a></li>
+        <li class="nav-item"><a id="createCategoryButtom"  href="#" class="nav-link" aria-current="page">Create Category</a></li>
+        <li class="nav-item"><a id="deleteCategoryButtom"  href="#" class="nav-link" aria-current="page">Delete Category</a></li>
+        <li class="nav-item"><a id="controlDishCategoryButtom"  href="#" class="nav-link" aria-current="page">Dishes-Category</a></li>
+        <li class="nav-item"><a id="createRestaurantButtom"  href="#" class="nav-link" aria-current="page">Create Restaurant</a></li>
+
+        <li class="nav-item"><a id="favoritesDishesButtom"  href="#" class="nav-link" aria-current="page">Select favorites Dishes</a></li>
+        <li class="nav-item"><a id="showFavoritesDishesButtom"  href="#" class="nav-link" aria-current="page">Show favorites Dishes</a></li>
+
+        </ul>
+</li>`;
+        adminMenu.insertAdjacentHTML('beforeend', menuAdmin);
+    }
+
+    bindSelectFavoritesDishes(handler) {
+        document.getElementById('favoritesDishesButtom').addEventListener('click', (event) => {
+            handler();
+            event.preventDefault();
+        });
+    }
+
+    displaySelectFavoritesDishes(dishes) {
+        const existingForm = document.getElementById('selectFavoritesForm');
+        if (existingForm) {
+            existingForm.remove();
+        }
+        let favDishes = localStorage.getItem('favDishes');
+        let arrFavDishes = [];
+        if (favDishes) {
+            arrFavDishes = favDishes.split(',');
+        }
+
+
+        const formHtml = `
+        <div id="selectFavoritesForm" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Select favorites dishes</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="favDishForm" >
+                            
+                                    ${dishes.map((dish,index) => {
+            if (!arrFavDishes.includes(dish.dish.name)) {
+
+                return `<div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="${dish.dish.name}" class="form-control" id="dishFav${index}" name="dishFav" ><label for="dishFav${index}" class="form-label">${dish.dish.name}</label>
+                                            </div>`
+
+            } else {
+
+                return `<div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="${dish.dish.name}" class="form-control"id="dishFav${index}" name="dishFav" checked><label for="dishFav${index}" class="form-label">${dish.dish.name}</label>
+                                            </div>`
+            }
+        }
+        ).join(" ")}
+                               
+                            <button type="submit" class="btn btn-primary">Select dishes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        // Agregar el formulario al cuerpo del documento
+        document.body.insertAdjacentHTML('beforeend', formHtml);
+
+        // Mostrar el modal
+        const selectFavDishModal = new bootstrap.Modal(document.getElementById('selectFavoritesForm'));
+        selectFavDishModal.show();
+
+        // Manejar el envío del formulario
+        document.getElementById('favDishForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const selectedCheckboxes = [];
+
+            const checkboxes = document.querySelectorAll('.form-check-input');
+
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedCheckboxes.push(checkbox.value);
+                }
+            });
+
+            const selectedCheckboxesString = selectedCheckboxes.join(',');
+
+            localStorage.setItem('favDishes', selectedCheckboxesString);
+            selectFavDishModal.hide();
+        });
+    }
+
+
+    displayFavDishes(dishes) {
+
+        let containerPlatosAleatorios = document.getElementById('containerPlatosAleatorios');
+        containerPlatosAleatorios.replaceChildren();
+
+        let principal = document.getElementById('principal');
+        principal.replaceChildren();
+
+        let platos = dishes;
+
+        let principalTittle = document.getElementById('principal-tittle');
+        principalTittle.innerText = 'Favorite dishes: ' ;
+
+        let breadcrumbs = document.getElementById('breadcrumb');
+        breadcrumbs.replaceChildren();
+        breadcrumbs.insertAdjacentHTML('beforeend', `
+            
+            <a class="link-body-emphasis me-3" href="/index.html">
+                <i class="fa-solid fa-house"></i>
+            </a>
+           
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item"><a href="index.html">Favorite Dishes</a></li>`);
+
+        platos.forEach(element => {
+            principal.insertAdjacentHTML('beforeend', `<div class="col-md-4">
+            <div class="card card-product-grid mb-4">
+                <a  data-dish="`+ element.dish.name + `" href="#" class="img-wrap">
+                    <img class="img-fluid w-100" src="https://via.placeholder.com/258x172.jpg?text=`+ element.dish.name + `">
+                </a>
+                <div class="card-body">
+                    <h4 class="card-title mt-5">`+ element.dish.name + `</h4>
+                    <p class="card-text">
+                    `+ element.dish.description + `
+                    </p>
+                    <a data-dish="`+ element.dish.name + `" href="#" class="btn btn-success"><i class="fa fa-eye"></i> Ver Plato</a>
+                </div>
+            </div>`);
+        });
+    }
+
+    bindShowFavoritesDishes(handler){
+        document.getElementById('showFavoritesDishesButtom').addEventListener('click', (event) => {
+            handler();
+            event.preventDefault();
+        });
+    }
 }
+
+
+
+
 
 
 

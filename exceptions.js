@@ -9,6 +9,13 @@ class BaseException extends Error {
         }
     }
 }
+class EmptyValueException extends BaseException {
+    constructor(param, fileName, lineNumber) {
+        super(`Error: The parameter ${param} can't be empty.`, fileName, lineNumber);
+        this.param = param;
+        this.name = 'EmptyValueException';
+    }
+}
 
 //Excepción acceso inválido a constructor
 class InvalidAccessConstructorException extends BaseException {
@@ -173,7 +180,8 @@ class CategoryIsNotAssignedException extends BaseException {
     }
 }
 
-export {BaseException,
+export {
+    BaseException,
     InvalidAccessConstructorException,
     InvalidCategoryException,
     CategoryExistException,
@@ -195,4 +203,6 @@ export {BaseException,
     CategoryAlreadyAssignedException,
     DishIsNotAssignedException,
     AllergenIsNotAssignedException,
-    CategoryIsNotAssignedException}
+    CategoryIsNotAssignedException,
+    EmptyValueException
+}

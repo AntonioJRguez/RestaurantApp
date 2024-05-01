@@ -1,14 +1,38 @@
+import { getCookie } from './util.js';
+
 const MODEL = Symbol('RestaurantModel');
 const VIEW = Symbol('RestaurantView');
+const AUTH = Symbol('AUTH');
+const USER = Symbol('USER');
+
 
 class RestaurantController {
-    constructor(modelRestaurant, viewRestaurant) {
+    constructor(modelRestaurant, viewRestaurant, auth) {
         this[MODEL] = modelRestaurant;
         this[VIEW] = viewRestaurant;
+        this[AUTH] = auth;
+        this[USER] = null;
     }
 
 
     onLoad(dishes, allergens, menus, restaurants, categories) {
+
+        if (getCookie('accetedCookieMessage') !== 'true') {
+            this[VIEW].showCookiesMessage();
+        }
+
+        const userCookie = getCookie('activeUser');
+        console.log(userCookie);
+        if (userCookie) {
+            const user = this[AUTH].getUser(userCookie);
+            if (user) {
+                this[USER] = user;
+                this.onOpenSession();
+            }
+        } else {
+            this.onCloseSession();
+        }
+
         for (const dish of dishes) {
             this[MODEL].addDish(dish);
         }
@@ -66,7 +90,7 @@ class RestaurantController {
         this[VIEW].onLoad(categories, dishes, allergens, menus, restaurants);
 
         this[VIEW].bindDishesCategoryList((category) => this.handleDishesCategoryList(category));
-        
+
         this[VIEW].bindDishDetail((dish) => this.handleDishDetail(dish));
         this[VIEW].bindAllergenDetail((allergen) => this.handleAllergenDetail(allergen));
         this[VIEW].bindMenuDetail((menu) => this.handleMenuDetail(menu));
@@ -75,15 +99,8 @@ class RestaurantController {
         this[VIEW].bindAllergsList((allergen) => this.handleAllergensList(allergen));
         this[VIEW].bindMenusList((menu) => this.handleMenusList(menu));
         this[VIEW].bindRestaurantsList((restaurant) => this.handleRestaurantsList(restaurant));
-        this[VIEW].bindCreateDishForm(() => this.handleShowCreateDish());
-        this[VIEW].bindDeleteDishForm(() => this.handleShowDeleteDish());
-        this[VIEW].bindControlDishMenuForm(() => this.handleShowControlDishMenu());
-        this[VIEW].bindCreateCategoryForm(() => this.handleShowCreateCategory());
-        this[VIEW].bindDeleteCategoryForm(() => this.handleShowDeleteCategory());
-        this[VIEW].bindControlDishCategoryForm(() => this.handleShowControlDishCategory());
+       
 
-
-        this[VIEW].bindCreateRestaurantForm(() => this.handleShowCreateRestaurant());
 
     }
 
@@ -152,8 +169,8 @@ class RestaurantController {
     handleShowCreateCategory = () => {
         console.log("Showing create category form...");
         this[VIEW].displayCreateCategoryForm(this.handleCreateCategory, this.handleDishesCategoryList);
-        
-       
+
+
     }
 
     handleCreateCategory = (categoryName, description) => {
@@ -185,7 +202,7 @@ class RestaurantController {
         const dish = dishes.find(d => d.dish.name === dishName);
         const category = categories.find(c => c.category.name === categoryName);
 
-        this[MODEL].assignCategoryToDish(category.category,dish.dish);
+        this[MODEL].assignCategoryToDish(category.category, dish.dish);
     }
     handleDeassignDishCategory = (dishName, menuName) => {
         const dishes = [...this[MODEL].getDishes()];
@@ -194,14 +211,14 @@ class RestaurantController {
         const dish = dishes.find(d => d.dish.name === dishName);
         const category = categories.find(c => c.category.name === menuName);
 
-        this[MODEL].deassignCategoryToDish(category.category,dish.dish);
+        this[MODEL].deassignCategoryToDish(category.category, dish.dish);
     }
 
     handleShowCreateRestaurant = () => {
         console.log("Showing create restaurant form...");
         this[VIEW].displayCreateRestaurantForm(this.handleCreateRestaurant);
-        
-       
+
+
     }
 
     handleCreateRestaurant = (restaurantName, description, restaurantLocation) => {
@@ -301,7 +318,64 @@ class RestaurantController {
         }
     }
 
+    onOpenSession() {
+        this[VIEW].showAuthUserProfile(this[USER]);
+        this[VIEW].bindCloseSession(this.handleCloseSession);
+        this[VIEW].showAdminMenu();
+        this[VIEW].bindCreateDishForm(() => this.handleShowCreateDish());
+        this[VIEW].bindDeleteDishForm(() => this.handleShowDeleteDish());
+        this[VIEW].bindControlDishMenuForm(() => this.handleShowControlDishMenu());
+        this[VIEW].bindCreateCategoryForm(() => this.handleShowCreateCategory());
+        this[VIEW].bindDeleteCategoryForm(() => this.handleShowDeleteCategory());
+        this[VIEW].bindControlDishCategoryForm(() => this.handleShowControlDishCategory());
+        this[VIEW].bindCreateRestaurantForm(() => this.handleShowCreateRestaurant());
+        this[VIEW].bindSelectFavoritesDishes(() => this.handleShowSelectFavoritesDishes());
+        this[VIEW].bindShowFavoritesDishes(() => this.handleDishesFavoriteList());
 
+        this[VIEW].hideLoginForm();
+    }
+    
+      onCloseSession() {
+        this[USER] = null;
+        this[VIEW].deleteUserCookie();
+        this[VIEW].showIdentificationLink();
+        this[VIEW].bindIdentificationLink(this.handleLoginForm);
+        this[VIEW].removeAdminMenu();
+      }
+
+      handleLoginForm = () => {
+        this[VIEW].showLogin();
+        this[VIEW].bindLogin(this.handleLogin);
+      };
+    
+      handleLogin = (username, password, ) => {
+        if (this[AUTH].validateUser(username, password)) {
+          this[USER] = this[AUTH].getUser(username);
+          this.onOpenSession();
+            this[VIEW].setUserCookie(this[USER]);
+        } else {
+          this[VIEW].showInvalidUserMessage();
+        }
+      };
+      handleCloseSession = () => {
+        this.onCloseSession();
+      };
+      
+
+      handleShowSelectFavoritesDishes(){
+        const dishes = [...this[MODEL].getDishes()];
+        this[VIEW].displaySelectFavoritesDishes(dishes);
+      }
+
+      handleDishesFavoriteList(){
+        let dishesFav = localStorage.getItem("favDishes");
+        let arrFavDishes = dishesFav.split(",");
+        let dishes = [...this[MODEL].getDishes()];
+
+        let dishesFavList = dishes.filter(dish => arrFavDishes.includes(dish.dish.name));
+        this[VIEW].displayFavDishes(dishesFavList);
+      }
+      
 
 }
 export default RestaurantController;
