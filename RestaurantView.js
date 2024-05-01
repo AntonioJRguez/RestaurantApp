@@ -1383,6 +1383,7 @@ class RestaurantView {
         <li class="nav-item"><a id="favoritesDishesButtom"  href="#" class="nav-link" aria-current="page">Select favorites Dishes</a></li>
         <li class="nav-item"><a id="showFavoritesDishesButtom"  href="#" class="nav-link" aria-current="page">Show favorites Dishes</a></li>
 
+        <li class="nav-item"><a id="createBackupButtom"  href="#" class="nav-link" aria-current="page">Create Backup</a></li>
         </ul>
 </li>`;
         adminMenu.insertAdjacentHTML('beforeend', menuAdmin);
@@ -1513,6 +1514,13 @@ class RestaurantView {
 
     bindShowFavoritesDishes(handler){
         document.getElementById('showFavoritesDishesButtom').addEventListener('click', (event) => {
+            handler();
+            event.preventDefault();
+        });
+    }
+
+    bindCreateBackup(handler){
+        document.getElementById('createBackupButtom').addEventListener('click', (event) => {
             handler();
             event.preventDefault();
         });

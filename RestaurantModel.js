@@ -88,6 +88,14 @@ class Dish {
 
         return cadena;
     }
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description,
+            ingredients: this.ingredients,
+            image: this.image
+        };
+      }
 
 }
 
@@ -127,6 +135,12 @@ class Category {
 
         return cadena;
     }
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description
+        };
+      }
 }
 
 class Allergen {
@@ -164,6 +178,13 @@ class Allergen {
 
         return cadena;
     }
+
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description
+        };
+      }
 }
 
 class Menu {
@@ -201,6 +222,12 @@ class Menu {
 
         return cadena;
     }
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description
+        };
+      }
 }
 
 class Coordinate {
@@ -227,7 +254,12 @@ class Coordinate {
     set longitude(value) {
         this.#longitude = value;
     }
-
+    toJSON() {
+        return {
+            latitude: this.latitude,
+            longitude: this.longitude
+        };
+      }
 
 
 }
@@ -281,6 +313,14 @@ class Restaurant {
 
         return cadena;
     }
+
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description,
+            location: this.location
+        };
+      }
 }
 
 export const RestaurantManagerSingleton = (function () {

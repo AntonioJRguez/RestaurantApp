@@ -3,7 +3,7 @@ import {
   InvalidAccessConstructorException,
   EmptyValueException,
   
-} from '../exceptions.js';
+} from './exceptions.js';
 
 class User {
   // Campos privados

@@ -99,8 +99,6 @@ class RestaurantController {
         this[VIEW].bindAllergsList((allergen) => this.handleAllergensList(allergen));
         this[VIEW].bindMenusList((menu) => this.handleMenusList(menu));
         this[VIEW].bindRestaurantsList((restaurant) => this.handleRestaurantsList(restaurant));
-       
-
 
     }
 
@@ -332,50 +330,86 @@ class RestaurantController {
         this[VIEW].bindSelectFavoritesDishes(() => this.handleShowSelectFavoritesDishes());
         this[VIEW].bindShowFavoritesDishes(() => this.handleDishesFavoriteList());
 
+        this[VIEW].bindCreateBackup(() => this.handleCreateBackup());
         this[VIEW].hideLoginForm();
     }
-    
-      onCloseSession() {
+
+    onCloseSession() {
         this[USER] = null;
         this[VIEW].deleteUserCookie();
         this[VIEW].showIdentificationLink();
         this[VIEW].bindIdentificationLink(this.handleLoginForm);
         this[VIEW].removeAdminMenu();
-      }
+    }
 
-      handleLoginForm = () => {
+    handleLoginForm = () => {
         this[VIEW].showLogin();
         this[VIEW].bindLogin(this.handleLogin);
-      };
-    
-      handleLogin = (username, password, ) => {
+    };
+
+    handleLogin = (username, password,) => {
         if (this[AUTH].validateUser(username, password)) {
-          this[USER] = this[AUTH].getUser(username);
-          this.onOpenSession();
+            this[USER] = this[AUTH].getUser(username);
+            this.onOpenSession();
             this[VIEW].setUserCookie(this[USER]);
         } else {
-          this[VIEW].showInvalidUserMessage();
+            this[VIEW].showInvalidUserMessage();
         }
-      };
-      handleCloseSession = () => {
+    };
+    handleCloseSession = () => {
         this.onCloseSession();
-      };
-      
+    };
 
-      handleShowSelectFavoritesDishes(){
+
+    handleShowSelectFavoritesDishes() {
         const dishes = [...this[MODEL].getDishes()];
         this[VIEW].displaySelectFavoritesDishes(dishes);
-      }
+    }
 
-      handleDishesFavoriteList(){
+    handleDishesFavoriteList() {
         let dishesFav = localStorage.getItem("favDishes");
         let arrFavDishes = dishesFav.split(",");
         let dishes = [...this[MODEL].getDishes()];
 
         let dishesFavList = dishes.filter(dish => arrFavDishes.includes(dish.dish.name));
         this[VIEW].displayFavDishes(dishesFavList);
-      }
-      
+    }
+
+    handleCreateBackup = () => {
+        let dishes = [...this[MODEL].getDishes()];
+        let categories = [...this[MODEL].getCategories()];
+        let allergens = [...this[MODEL].getAllergens()];
+        let menus = [...this[MODEL].getMenus()];
+        let restaurants = [...this[MODEL].getRestaurants()];
+        let backup = {
+            dishes: dishes,
+            categories: categories,
+            allergens: allergens,
+            menus: menus,
+            restaurants: restaurants
+        };
+
+        let backupStr = JSON.stringify(backup, null, 2);
+
+        var formData = new FormData();
+        formData.append('jsonObj', backupStr);
+
+        fetch('writeJSONBackup.php', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Error al guardar el archivo.');
+            }
+        })
+            .then(data => {
+                console.log("Archivo guardado correctamente:", data);
+            })
+            .catch(error => {
+                console.error('Error al guardar el archivo:', error);
+            });
+    }
 
 }
+
 export default RestaurantController;
