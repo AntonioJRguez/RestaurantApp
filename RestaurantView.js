@@ -285,7 +285,16 @@ class RestaurantView {
                         <li>Latitude: ${data.restaurant.location.latitude}</li>
                         <li>Longitude: ${data.restaurant.location.longitude} </li>
                     </ul>
+                    <div id="map"></div>
                 </div>`);
+        var map = L.map('map').setView([data.restaurant.location.latitude, -data.restaurant.location.longitude], 13);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([data.restaurant.location.latitude, data.restaurant.location.longitude]).addTo(map)
+            .bindPopup(data.restaurant.name)
+            .openPopup();
     }
 
     displayAllergens(allergsList) {
@@ -1384,6 +1393,8 @@ class RestaurantView {
         <li class="nav-item"><a id="showFavoritesDishesButtom"  href="#" class="nav-link" aria-current="page">Show favorites Dishes</a></li>
 
         <li class="nav-item"><a id="createBackupButtom"  href="#" class="nav-link" aria-current="page">Create Backup</a></li>
+        <li class="nav-item"><a id="showRestaurantPositionsButtom"  href="#" class="nav-link" aria-current="page">Restaurants Map</a></li>
+        
         </ul>
 </li>`;
         adminMenu.insertAdjacentHTML('beforeend', menuAdmin);
@@ -1419,7 +1430,7 @@ class RestaurantView {
                     <div class="modal-body">
                         <form id="favDishForm" >
                             
-                                    ${dishes.map((dish,index) => {
+                                    ${dishes.map((dish, index) => {
             if (!arrFavDishes.includes(dish.dish.name)) {
 
                 return `<div class="form-check">
@@ -1482,7 +1493,7 @@ class RestaurantView {
         let platos = dishes;
 
         let principalTittle = document.getElementById('principal-tittle');
-        principalTittle.innerText = 'Favorite dishes: ' ;
+        principalTittle.innerText = 'Favorite dishes: ';
 
         let breadcrumbs = document.getElementById('breadcrumb');
         breadcrumbs.replaceChildren();
@@ -1512,18 +1523,45 @@ class RestaurantView {
         });
     }
 
-    bindShowFavoritesDishes(handler){
+    bindShowFavoritesDishes(handler) {
         document.getElementById('showFavoritesDishesButtom').addEventListener('click', (event) => {
             handler();
             event.preventDefault();
         });
     }
 
-    bindCreateBackup(handler){
+    bindCreateBackup(handler) {
         document.getElementById('createBackupButtom').addEventListener('click', (event) => {
             handler();
             event.preventDefault();
         });
+    }
+    bindShowRestaurantPositions(handler){
+        document.getElementById('showRestaurantPositionsButtom').addEventListener('click', (event) => {
+            handler();
+            event.preventDefault();
+        });
+    }
+    displayRestaurantPositions(restaurants){
+        let containerPlatosAleatorios = document.getElementById('containerPlatosAleatorios');
+        containerPlatosAleatorios.replaceChildren();
+
+        let principal = document.getElementById('principal');
+        principal.replaceChildren();
+
+        let principalTittle = document.getElementById('principal-tittle');
+        principalTittle.innerText = 'Restaurants position: ' ;
+        principal.insertAdjacentHTML("beforeend", " <div id='map'></div>")
+        var map = L.map('map').setView([39.00200634779509, -3.8632905599355825], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        console.log(restaurants);
+        restaurants.forEach((restaurant)=>
+        L.marker([restaurant.restaurant.location.latitude, restaurant.restaurant.location.longitude]).addTo(map)
+            .bindPopup(restaurant.restaurant.name)
+            .openPopup());
+
     }
 }
 

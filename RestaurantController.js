@@ -331,6 +331,7 @@ class RestaurantController {
         this[VIEW].bindShowFavoritesDishes(() => this.handleDishesFavoriteList());
 
         this[VIEW].bindCreateBackup(() => this.handleCreateBackup());
+        this[VIEW].bindShowRestaurantPositions(() => this.handleShowRestaurantPositions());
         this[VIEW].hideLoginForm();
     }
 
@@ -408,6 +409,11 @@ class RestaurantController {
             .catch(error => {
                 console.error('Error al guardar el archivo:', error);
             });
+    }
+
+    handleShowRestaurantPositions = () => {
+        const restaurants = [...this[MODEL].getRestaurants()];
+        this[VIEW].displayRestaurantPositions(restaurants);
     }
 
 }
